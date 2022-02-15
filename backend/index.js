@@ -5,13 +5,31 @@ connect_to_mongo();
 const express = require('express');
 const app = express();
 const port = 3000;
+const bodyParser = require('body-parser')
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded())
+
+// app.use(express.json());
+
+// parse application/json
+app.use(bodyParser.json())
+app.use(express.json());
 
 // available routes
-app.get('/api/aut', function (req, res) {
-    res.send('Hello Mansoor!')
-});
-
 //auth routes
+
+// app.post('/add-user', async (req, res,) => {
+//     try {
+//         console.log(req.body);
+//         return
+//         var users = new User(req.body)
+//         await users.save();
+//         res.send('user add successfully');
+//     } catch (error) {
+//         console.log('error generating');
+//         res.send(error)
+//     }
+// })
 app.use('/api/auth', require('./routes/auth'));
 
 // notes routes
