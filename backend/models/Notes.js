@@ -3,6 +3,12 @@ const { Schema } = mongoose;
 const moment = require('moment');
 
 const NotesSchema = new Schema({
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: true
+    }
+    ,
     title: {
         type: String,
         required: true
