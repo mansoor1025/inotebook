@@ -53,4 +53,52 @@ router.post('/add-user', [
     }
 })
 
+router.post('/login', [
+    body('email', 'Enter valid Email').isEmail(),
+    body('email', 'email is required').exists(),
+    body('password', 'password is required').exists()
+], async (req, res,) => {
+    try {
+        const { email, password } = req.body;
+
+        // check validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        // finding user via email
+        const check_user = await User.findOne({ email: email });
+
+        // check whether user exists
+        if (!check_user) {
+            return res.status(400).send('username and password did not matched')
+        }
+
+        // if user exists in our db now compare password with email
+
+        const compare_password = await bcrypt.compare(password, check_user.password);
+
+        // if password did not matched 
+        if (!compare_password) {
+            return res.status(400).send('username and password did not matched')
+        }
+
+        // jwt payload data
+        const data = {
+            user_id: {
+                id: check_user._id
+            }
+        }
+        // generating auth token
+        const auth_token = jwt.sign(data, jwt_secret);
+        res.json({ auth_token });
+
+    } catch (error) { 
+        // logging errors
+        console.log(error);
+        res.send(error)
+    }
+})
+
 module.exports = router;
