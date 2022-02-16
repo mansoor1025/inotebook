@@ -4,6 +4,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+// secret jwt token
 const jwt_secret = "dasdasdasdas";
 router.post('/add-user', [
     body('name', 'name is required').exists(),
@@ -36,14 +37,16 @@ router.post('/add-user', [
             await new User(users).save();
 
             const user_data = await User.find({ email: req.body.email });
+
+            // jwt payload data
             const data = {
                 user_id: {
                     id: user_data[0]._id
                 }
             }
+            // generating auth token
             const auth_token = await jwt.sign(data, jwt_secret);
             res.json({ auth_token });
-            console.log(auth_token);
         });
     } catch (error) {
         res.send(error)
