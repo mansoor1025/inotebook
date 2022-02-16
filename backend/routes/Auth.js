@@ -4,8 +4,11 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const FetchUsers = require('../middleware/FetchUsers');
 // secret jwt token
 const jwt_secret = "dasdasdasdas";
+
+// Route:1 add user 
 router.post('/add-user', [
     body('name', 'name is required').exists(),
     body('email').isEmail().exists(),
@@ -53,6 +56,7 @@ router.post('/add-user', [
     }
 })
 
+// Route:2 login user
 router.post('/login', [
     body('email', 'Enter valid Email').isEmail(),
     body('email', 'email is required').exists(),
@@ -94,7 +98,22 @@ router.post('/login', [
         const auth_token = jwt.sign(data, jwt_secret);
         res.json({ auth_token });
 
-    } catch (error) { 
+    } catch (error) {
+        // logging errors
+        console.log(error);
+        res.send(error)
+    }
+})
+
+// Route:3 get user
+router.post('/get-user', FetchUsers, async (req, res,) => {
+    try {
+        const user_id = req.user.id;
+
+        // fetch user details with userid
+        const user_details = await User.findOne({ _id: user_id }).select('-password');
+        res.status(200).json({ success: user_details })
+    } catch (error) {
         // logging errors
         console.log(error);
         res.send(error)
