@@ -132,7 +132,7 @@ router.post('/delete-notes', FetchUsers, [
         if (!note.user_id == req.user.id) {
             return res.status(401).json({ error: "Not Allowed" })
         }
-
+        
         // delete notes
         await notes.deleteOne({ _id: note_id });
         return res.status(200).json({ success: "note delete successfully" })
