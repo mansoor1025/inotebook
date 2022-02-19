@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const { body, query, validationResult } = require('express-validator');
 const FetchUsers = require('../middleware/FetchUsers');
 const notes = require('../models/Notes');
@@ -47,6 +48,98 @@ router.get('/fetch-notes', FetchUsers, [
     const note = await notes.find({ user_id: user_id })
     res.status(200).json({ success: note });
 
+})
+
+// Route 3: updating notes
+router.post('/update-notes', FetchUsers, [
+    body('note_id', 'note_id is required').exists(),
+    body('title', 'title is required').exists(),
+    body('description', 'description is required').exists()
+], async (req, res,) => {
+    const { note_id, title, description, tags } = req.body;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    // note id is valid
+    if (!mongoose.Types.ObjectId.isValid(note_id)) {
+        return res.status(400).json({ error: "note id is not valid" })
+    }
+
+    // finding notes
+    const note = await notes.findOne({ _id: note_id });
+
+    // if note_id is not present in db
+    if (!note) {
+        return res.status(400).json({ error: "Note not found" })
+    }
+
+    // checking user is authorized
+    if (!note.user_id == req.user.id) {
+        return res.status(401).json({ error: "Not Allowed" })
+    }
+
+    // notes new updated object
+    const update_notes = {
+        title: title,
+        description: description,
+        tags: tags
+    }
+
+    // updating notes 
+    const updated_notes = await notes.findByIdAndUpdate(note._id, update_notes,
+        async function (err, docs) {
+            if (err) {
+                return res.status(500).json({ error: err })
+            }
+            else {
+                const notes = await notes.findOne({ _id: note._id });
+                return res.status(200).json({ success: notes })
+            }
+        });
+})
+
+// Route 4: delete notes
+
+router.post('/delete-notes', FetchUsers, [
+    body('note_id', 'note_id is required').exists()
+], async (req, res,) => {
+
+    try {
+        const { note_id } = req.body;
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        // note id is valid
+        if (!mongoose.Types.ObjectId.isValid(note_id)) {
+            return res.status(400).json({ error: "note id is not valid" })
+        }
+
+        // finding notes
+        const note = await notes.findOne({ _id: note_id });
+
+        // if note_id is not present in db
+        if (!note) {
+            return res.status(400).json({ error: "Note not found" })
+        }
+
+        // checking user is authorized
+        if (!note.user_id == req.user.id) {
+            return res.status(401).json({ error: "Not Allowed" })
+        }
+
+        // delete notes
+        await notes.deleteOne({ _id: note_id });
+        return res.status(200).json({ success: "note delete successfully" })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "Interval Server Error" })
+    }
 })
 
 
