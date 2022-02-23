@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCoffee, faPen ,faTrash} from '@fortawesome/free-solid-svg-icons'
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 function NotesItem(props) {
     const { note } = props;
     return (
@@ -12,8 +12,8 @@ function NotesItem(props) {
                         <p className="card-text">{note.description}</p>
                         <i className="mx-3"><FontAwesomeIcon icon={faPen} /></i>
                         <i className=""><FontAwesomeIcon icon={faTrash} /></i>
-                        
-                        
+
+
                     </div>
                 </div>
             </div>
