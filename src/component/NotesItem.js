@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
+import notesContext from '../context/notes/notesContext'
 function NotesItem(props) {
+    const context = useContext(notesContext);
+    const { delete_note } = context;
     const { note } = props;
     return (
         <>
@@ -11,7 +14,7 @@ function NotesItem(props) {
                         <h5 className="card-title">{note.title}</h5>
                         <p className="card-text">{note.description}</p>
                         <i className="mx-3"><FontAwesomeIcon icon={faPen} /></i>
-                        <i className=""><FontAwesomeIcon icon={faTrash} /></i>
+                        <i className=""><FontAwesomeIcon icon={faTrash} onClick={() => { delete_note(note._id) }} /></i>
 
 
                     </div>
