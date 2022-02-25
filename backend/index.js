@@ -5,7 +5,10 @@ connect_to_mongo();
 const express = require('express');
 const app = express();
 const port = 5000;
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const cors = require('cors');
+app.use(cors());
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
