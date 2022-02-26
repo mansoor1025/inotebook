@@ -5,9 +5,6 @@ const host = 'http://localhost:5000/api'
 const NotesState = (props) => {
     const note_data = [];
     const [note, setNote] = useState(note_data);
-    const [error, setError] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
-
     // get all notes
 
     const get_all_notes = async () => {
@@ -31,7 +28,7 @@ const NotesState = (props) => {
                     // instead of a catch() block so that we don't swallow
                     // exceptions from actual bugs in components.
                     (error) => {
-                        setError(error);
+                
                     }
                 )
         } catch (error) {
@@ -41,17 +38,32 @@ const NotesState = (props) => {
 
     // Add Note
     const add_note = (title, description, tags = "default") => {
+        try {
+            const url = `${host}/notes/add-note`;
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth_token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjp7ImlkIjoiNjIwYzllZmM2OGQ1OGM0MWJlMTk5MDI0In0sImlhdCI6MTY0NTAxMTIwMX0.k0oRK1diuNEJVgzEdzxKuJcpUc7w48gJmI_4cWAlc2E"
+                },
+                body: JSON.stringify({ title: title, description: description, tags: tags })
+            };
 
-        const my_note = {
-            "_id": "620ce2b530cd3387469a358d",
-            "user_id": "620c9efc68d58c41be199024",
-            "title": title,
-            "description": description,
-            "tags": tags,
-            "created_at": "2022-02-16T03:39:19-08:00",
-            "__v": 0
+            fetch(url, requestOptions)
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        get_all_notes()
+                    },
+                    // Note: it's important to handle errors here
+                    // instead of a catch() block so that we don't swallow
+                    // exceptions from actual bugs in components.
+                    (error) => {
+                    }
+                )
+        } catch (error) {
+            console.log('error' + error);
         }
-        setNote(note_data.concat(my_note));
         console.log('note add successfully');
     }
 
