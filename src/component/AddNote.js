@@ -8,6 +8,7 @@ function AddNote() {
     const addNote = (e) => {
         e.preventDefault();
         add_note(note.title, note.description, note.tags)
+        document.getElementById("add_note_form").reset();
     }
 
     const onChange = (e) => {
@@ -16,7 +17,7 @@ function AddNote() {
     return (
         <div className='my-3'>
             <h1>Add Notes</h1>
-            <form>
+            <form id='add_note_form'>
                 <div className="form-group">
                     <label htmlFor="title">Title</label>
                     <input type="text" className="form-control" id="title" name="title" placeholder="Enter Title" required onChange={onChange} />
@@ -28,7 +29,7 @@ function AddNote() {
 
                 <div className="form-group">
                     <label htmlFor="tags">Tags</label>
-                    <input type="text" className="form-control" id="tags" name="tags" placeholder="Enter Tags" />
+                    <input type="text" className="form-control" id="tags" name="tags" placeholder="Enter Tags" onChange={onChange} />
                 </div>
                 <button type="submit" className="btn btn-primary" onClick={addNote}>Submit</button>
             </form>

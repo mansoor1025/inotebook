@@ -5,8 +5,8 @@ const host = 'http://localhost:5000/api'
 const NotesState = (props) => {
     const note_data = [];
     const [note, setNote] = useState(note_data);
-    // get all notes
 
+    // get all notes
     const get_all_notes = async () => {
         try {
             const url = `${host}/notes/fetch-notes`;
@@ -28,7 +28,7 @@ const NotesState = (props) => {
                     // instead of a catch() block so that we don't swallow
                     // exceptions from actual bugs in components.
                     (error) => {
-                
+
                     }
                 )
         } catch (error) {
@@ -67,15 +67,75 @@ const NotesState = (props) => {
         console.log('note add successfully');
     }
 
+    // update Note
+    const final_update_notes = (title, description, tags = "default", note_id) => {
+        try {
+            const url = `${host}/notes/update-notes`;
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth_token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjp7ImlkIjoiNjIwYzllZmM2OGQ1OGM0MWJlMTk5MDI0In0sImlhdCI6MTY0NTAxMTIwMX0.k0oRK1diuNEJVgzEdzxKuJcpUc7w48gJmI_4cWAlc2E"
+                },
+                body: JSON.stringify({ title: title, description: description, tags: tags, note_id: note_id })
+            };
+
+            fetch(url, requestOptions)
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        console.log('result');
+                        console.log('=================');
+                        console.log(result);
+                        get_all_notes()
+                    },
+                    // Note: it's important to handle errors here
+                    // instead of a catch() block so that we don't swallow
+                    // exceptions from actual bugs in components.
+                    (error) => {
+                    }
+                )
+            get_all_notes()
+            console.log('note updated successfully');
+        } catch (error) {
+            console.log('error' + error);
+        }
+
+    }
+
     // Delete Note
     const delete_note = (id) => {
-        console.log(id);
-        const new_notes = note_data.filter((note) => { return note._id !== id });
-        setNote(new_notes)
+        try {
+            const url = `${host}/notes/delete-notes`;
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth_token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjp7ImlkIjoiNjIwYzllZmM2OGQ1OGM0MWJlMTk5MDI0In0sImlhdCI6MTY0NTAxMTIwMX0.k0oRK1diuNEJVgzEdzxKuJcpUc7w48gJmI_4cWAlc2E"
+                },
+                body: JSON.stringify({ note_id: id })
+            };
+
+            fetch(url, requestOptions)
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        get_all_notes()
+                    },
+                    // Note: it's important to handle errors here
+                    // instead of a catch() block so that we don't swallow
+                    // exceptions from actual bugs in components.
+                    (error) => {
+                    }
+                )
+        } catch (error) {
+            console.log('error' + error);
+        }
+        console.log('note Delete successfully');
     }
 
     return (
-        <notesContext.Provider value={{ note, setNote, add_note, delete_note, get_all_notes }}>
+        <notesContext.Provider value={{ note, setNote, add_note, delete_note, get_all_notes, final_update_notes }}>
             {props.children}
         </notesContext.Provider>
     )
